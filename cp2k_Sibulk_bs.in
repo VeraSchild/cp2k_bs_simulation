@@ -1,0 +1,89 @@
+&GLOBAL
+   PROJECT Si_bulk3
+   RUN_TYPE ENERGY_FORCE
+   PRINT_LEVEL MEDIUM
+&END GLOBAL
+
+&FORCE_EVAL
+   METHOD Quickstep
+   &SUBSYS      
+    &KIND Si
+      ELEMENT	Si
+      BASIS_SET DZVP-MOLOPT-SR-GTH-q4
+      POTENTIAL GTH-PBE-q4
+    &END KIND
+    &CELL
+      ABC 3.86697 3.86697 3.86697
+      ALPHA_BETA_GAMMA 60.0 60.0 60.0
+      PERIODIC XYZ
+      MULTIPLE_UNIT_CELL 1 1 1
+    &END CELL
+    &COORD
+       SCALED
+       Si    0.25  0.25  0.25
+       Si    0.00  0.00  0.00
+    &END COORD   
+   &END SUBSYS
+   &DFT
+      BASIS_SET_FILE_NAME /home/vschild/cp2k_basis/BASIS_MOLOPT
+      POTENTIAL_FILE_NAME /home/vschild/cp2k_basis/GTH_POTENTIALS
+      &POISSON
+         PERIODIC XYZ
+      &END POISSON
+      &QS
+         EXTRAPOLATION USE_GUESS 
+         EPS_DEFAULT 1.0E-10
+      &END QS
+      &MGRID
+         NGRIDS 4
+         CUTOFF 500
+         REL_CUTOFF 60
+      &END MGRID
+      &XC
+         &XC_FUNCTIONAL PBE
+         &END XC_FUNCTIONAL
+      &END XC
+      &SCF
+         SCF_GUESS ATOMIC
+         EPS_SCF 1.0E-7
+         MAX_SCF 300
+         ADDED_MOS 4
+         &DIAGONALIZATION ON
+            ALGORITHM STANDARD
+         &END DIAGONALIZATION
+         &MIXING  T
+            METHOD BROYDEN_MIXING
+            ALPHA 0.4
+            NBROYDEN 8
+         &END MIXING
+         &SMEAR  ON
+            METHOD FERMI_DIRAC
+            ELECTRONIC_TEMPERATURE [K] 300
+         &END SMEAR
+      &END SCF
+      &KPOINTS
+         SCHEME MONKHORST-PACK 3 3 3
+         WAVEFUNCTIONS COMPLEX
+         SYMMETRY .FALSE.
+         FULL_GRID .FALSE.
+         PARALLEL_GROUP_SIZE -1
+      &END KPOINTS
+      &PRINT
+         &BAND_STRUCTURE
+            ADDED_MOS 2
+            FILE_NAME Si_bulk.bs
+            &KPOINT_SET
+               UNITS B_VECTOR              
+               SPECIAL_POINT GAMMA 0.0 0.0 0.0
+               SPECIAL_POINT X 0.0 0.5 0.5
+               SPECIAL_POINT W 0.25 0.75 0.5
+               SPECIAL_POINT L 0.5 0.5 0.5
+               SPECIAL_POINT GAMMA 0.0 0.0 0.0 
+               SPECIAL_POINT K 0.375 0.75 0.375
+               SPECIAL_POINT X 0.0 0.5 0.5
+               NPOINTS 100
+            &END
+         &END BAND_STRUCTURE
+      &END PRINT
+   &END DFT
+&END FORCE_EVAL
